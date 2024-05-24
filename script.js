@@ -25,10 +25,12 @@ class ParkingManager extends HTMLElement {
         shadow.appendChild(template.content.cloneNode(true));
     }
 
+    // Define los atributos observados
     static get observedAttributes() {
         return ['data-title-a', 'data-title-b'];
     }
 
+    // Lógica para manejar cambios en los atributos observados
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'data-title-a') {
             this.shadowRoot.getElementById('titleA').textContent = newValue;
@@ -37,10 +39,13 @@ class ParkingManager extends HTMLElement {
         }
     }
 
+    // Lógica ejecutada cuando el componente es conectado al DOM
     connectedCallback() {
+        // Obtener elementos del shadow DOM
         const sectionA = this.shadowRoot.getElementById('sectionA');
         const sectionB = this.shadowRoot.getElementById('sectionB');
 
+        // Inicializar o recuperar datos de estacionamiento
         let parkingData = JSON.parse(localStorage.getItem('parkingData')) || {
             sectionA: [
                 { spotId: 'A1', status: 'available' },
@@ -56,6 +61,7 @@ class ParkingManager extends HTMLElement {
             ]
         };
 
+        // Función para renderizar una sección de estacionamiento
         const renderSection = (section, data) => {
             section.innerHTML = '';
             data.forEach((spot, index) => {
@@ -76,7 +82,7 @@ class ParkingManager extends HTMLElement {
                 section.appendChild(card);
             });
 
-            // Añadir eventos
+            // Añadir eventos a los elementos de la sección
             section.querySelectorAll('.status').forEach(statusElement => {
                 statusElement.addEventListener('click', () => {
                     this.toggleStatus(statusElement.dataset.section, parseInt(statusElement.dataset.index, 10));
@@ -90,6 +96,7 @@ class ParkingManager extends HTMLElement {
             });
         };
 
+        // Función para cambiar el estado de ocupación de un lugar de estacionamiento
         this.toggleStatus = (sectionId, index) => {
             let sectionData = parkingData[sectionId];
             const currentStatus = sectionData[index].status;
@@ -112,6 +119,7 @@ class ParkingManager extends HTMLElement {
             }
         };
 
+        // Función para guardar los datos de un lugar de estacionamiento ocupado
         this.saveData = (sectionId, index) => {
             const plateInput = this.shadowRoot.getElementById(`plate-${parkingData[sectionId][index].spotId}`);
             const brandInput = this.shadowRoot.getElementById(`brand-${parkingData[sectionId][index].spotId}`);
@@ -145,9 +153,12 @@ class ParkingManager extends HTMLElement {
             alert('Los datos se han guardado correctamente.');
         };
 
+        // Renderizar las secciones A y B
         renderSection(sectionA, parkingData.sectionA);
         renderSection(sectionB, parkingData.sectionB);
     }
 }
 
+// Definir el elemento personalizado 'parking-manager'
 customElements.define('parking-manager', ParkingManager);
+
